@@ -5,11 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
+using System.Collections;
+
 /*
  * 代码规范:
  * （驼峰命名法）第一个单词首字母小写，后面其他单词首字母大写。
  * 规定：  1.尽可能使用英文命名
- *         2.不使用缩写
+ *         2.尽可能不使用缩写
  *         3.使用TAB作为缩进，缩进大小为4
  *         4.类型名称和源文件名称一致
  *         5.调用类型成员内部其他成员，需加this,调用父类成员需加base
@@ -24,7 +27,7 @@ namespace wordCount
         public static string[] Information = { "", "", "" };//定义写入文件的3种信息
         public static void Main(string[] args)
         {
-            string fileName = "D:\\file.txt";//被执行的文件        
+            string fileName = Environment.CurrentDirectory + "\\file.txt";//被执行的文件        
             Console.Write("wordCount.exe ");
 
             string message = Console.ReadLine();//读取写入的各种操作符（-c -w -l -o）,顺序可颠倒
@@ -46,6 +49,28 @@ namespace wordCount
                     returnNumber[i] = getRows(fileName);
                     Console.Write("lines：" + returnNumber[i] + "\n");
                     Information[i] = "lines：" + returnNumber[i] + "\n";
+                }
+                else if (s[i] == "-n")
+                {
+                    returnNumber[i] = totalWord(fileName);
+                    Console.Write("words:" + returnNumber[i] + "\n");
+                    Information[i] = "words:" + returnNumber[i] + "\n";
+                }
+                else if(s[i] == "-w")
+                {
+                    Hashtable returnTable = countWord(fileName);
+                    //ArrayList wordList = new ArrayList(returnTable.Keys);
+                    //wordList.Sort();
+                    string[] keys = new string[returnTable.Count];
+                    int[] values = new int[returnTable.Count];
+                    returnTable.Keys.CopyTo(keys, 0);
+                    returnTable.Values.CopyTo(values, 0);
+                    Array.Sort(values, keys);
+                    Array.Reverse(keys);
+                    for (int j = 0; j < 10; j++) 
+                    {
+                        Console.WriteLine(keys[j] + ":" + returnTable[keys[j]]);
+                    }                   
                 }
                 else if (s[i] == "-o")
                 {
@@ -78,10 +103,53 @@ namespace wordCount
             Console.Write("行数统计成功\n");
             return words.Length;//返回字符串的个数,即行数          
         }
+        public static int totalWord(string fileName)
+        {
+            //统计单词的总数
+            FileStream fs = new FileStream(fileName, FileMode.Open);//打开文件
+            StreamReader sr = new StreamReader(fs, Encoding.Default);
+            string s = sr.ReadToEnd();//读取所有信息
+            Regex rg = new Regex("[A-Za-z-]+");//用正则表达式匹配单词
+            MatchCollection mc;//通过正则表达式所找到的成功匹配的集合
+            mc = rg.Matches(s);
+                
+            return mc.Count;
+        }
+        public static Hashtable countWord(string fileName)
+        {
+            //统计单个单词的出现次数
+            FileStream fs = new FileStream(fileName, FileMode.Open);//打开文件
+            StreamReader sr = new StreamReader(fs, Encoding.Default);
+            string s = sr.ReadToEnd();//读取所有信息
+
+            Regex rg = new Regex("[A-Za-z-]+");//用正则表达式匹配单词
+            MatchCollection mc;//通过正则表达式所找到的成功匹配的集合
+            mc = rg.Matches(s);
+            Hashtable wordList = new Hashtable();
+            for (int i = 0; i < mc.Count; i++)
+            {
+                string mcTmp = mc[i].Value.ToLower();//大小写不敏感
+                if(mcTmp.Length>=4)
+                {
+                    if(!wordList.ContainsKey(mcTmp))//第一次出现的单词添加为key
+                    {
+                        wordList.Add(mcTmp,1);
+                    }
+                    else
+                    {
+                        int value = (int)wordList[mcTmp];
+                        value++;
+                        wordList[mcTmp] = value;
+                    }
+                }
+            }
+            return wordList;
+        }
         public static void save()
         {
-            //写入文件的方法                  
-            FileStream fs = new FileStream("D:\\result.txt", FileMode.Create);//定义文件操作类型,实例化
+            //写入文件的方法        
+            string fileName = Environment.CurrentDirectory + "\\result.txt";//被执行的文件        
+            FileStream fs = new FileStream(fileName, FileMode.Create);//定义文件操作类型,实例化
             StreamWriter sw = new StreamWriter(fs);//用特定方式写入信息,实例化
             for (int i = 0; i < 2; i++)
             {
@@ -93,6 +161,5 @@ namespace wordCount
             fs.Close();
             Console.Write("文件写入成功\n");
         }
-
     }
 }
