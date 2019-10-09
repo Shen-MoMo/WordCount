@@ -17,8 +17,6 @@ using System.IO;
  */
 namespace wordCount
 {
-
-    
     class Program
     {
         public static string[] Information = { "", "", "" };//定义写入文件的3种信息
@@ -58,12 +56,29 @@ namespace wordCount
         }
         public static int getChacactor(string fileName)
         {
-            //统计字符数的方法     
-            FileStream fs = new FileStream(fileName, FileMode.Open);//打开文件
-            string wordsNumber = Convert.ToString(fs.Length);//读出文件中的长度信息,即字符数
-            fs.Close();
+            int i, count;
+            count = 0;
+            //统计字符数的方法          
+            // FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);//打开文件
+            StreamReader fs = new StreamReader(fileName);
+            string str = null; string temp = null;
+            while ((str = fs.ReadLine()) != null)
+            {
+                for (i = 0; i < str.Length; i++)
+                {
+                    if (str[i] >= 0 && str[i] <= 127)
+                    {
+                        Console.Write(str[i]);
+                        count++;
+                    }
+                }
+            }
+                fs.Close();
+                             
+               
             Console.Write("字符统计成功!\n");
-            return int.Parse(wordsNumber);//返回读出的字符数          
+           // return int.Parse(wordsNumber);//返回读出的字符数    
+            return count;
         }
         public static int getRows(string fileName)
         {
