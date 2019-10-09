@@ -56,28 +56,25 @@ namespace wordCount
         }
         public static int getChacactor(string fileName)
         {
+            //统计字符数的方法 
             int i, count;
-            count = 0;
-            //统计字符数的方法          
-            // FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);//打开文件
+            count = 0;                    
+            //打开文件
             StreamReader fs = new StreamReader(fileName);
-            string str = null; string temp = null;
+            string str = null; 
             while ((str = fs.ReadLine()) != null)
             {
                 for (i = 0; i < str.Length; i++)
                 {
                     if (str[i] >= 0 && str[i] <= 127)
                     {
-                        Console.Write(str[i]);
+                       // Console.Write(str[i]);
                         count++;
                     }
                 }
             }
-                fs.Close();
-                             
-               
-            Console.Write("字符统计成功!\n");
-           // return int.Parse(wordsNumber);//返回读出的字符数    
+            fs.Close();                                      
+            Console.Write("字符统计成功!\n");             
             return count;
         }
         public static int getRows(string fileName)
