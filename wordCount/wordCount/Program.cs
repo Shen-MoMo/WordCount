@@ -25,7 +25,7 @@ namespace wordCount
         public static string[] Information = { "", "", "" ,""};//定义写入文件的3种信息
         public static void Main(string[] args)
         {
-            string fileName = Environment.CurrentDirectory + "\\file.txt";//执行DEBUG目录下的文件        
+            string filePath = Environment.CurrentDirectory + "\\file.txt";//记录执行文件的路径，默认为DEBUG目录        
             Console.Write("wordCount.exe ");
 
             string message = Console.ReadLine();//读取写入的各种操作符（-c -w -l -o）,顺序可颠倒
@@ -35,30 +35,45 @@ namespace wordCount
             int[] returnNumber = { -1, -1, -1};//最终返回的文档数据
             for (int i = 0; i < s.Length; i++)
             {
-                //对相应的命令执行相应的操作，结果写入returnNumber
-                if (s[i] == "-c")
+                if (s[i] == "-r" && i == 0) //指定读取的文件 注意：使用该指令时，该指令必须在一开始申明
                 {
-                    returnNumber[i] = Function.getChacactor(fileName);
+                    i++;
+                    FileInfo fi = new FileInfo(s[i]);
+                    if (File.Exists(s[i]) == false || fi.Length == 0)//找不到文件或者文件为空
+                    {
+                        Console.WriteLine("can't find file or file is empty!");
+                        break;
+                    }
+                    Console.WriteLine("found file success!");
+                    filePath = s[i];
+                }
+                //对相应的命令执行相应的操作，结果写入returnNumber
+                if (s[i] == "-c")//统计总字符数
+                { 
+                    returnNumber[i] = Function.getChacactor(filePath);
                     Information[i] = "characters：：" + returnNumber[i] + "\n";
                 }
-                else if (s[i] == "-l")
+                else if (s[i] == "-l")//统计总行数
                 {
-                    returnNumber[i] = Function.getRows(fileName);
+                    returnNumber[i] = Function.getRows(filePath);
                     Information[i] = "lines：" + returnNumber[i] + "\n";
                 }
-                else if (s[i] == "-n")
+                else if (s[i] == "-n")//统计单词数
                 {
-                    returnNumber[i] = Function.totalWord(fileName);
+                    returnNumber[i] = Function.totalWord(filePath);
                     Information[i] = "words:" + returnNumber[i] + "\n";
                 }
-                else if(s[i] == "-w")
+                else if(s[i] == "-w")//统计出现频率最高的10个单词及出现次数
                 {
-                    Hashtable returnTable = Function.countWord(fileName);
-                             
+                    Hashtable returnTable = Function.countWord(filePath);
                 }
                 else if (s[i] == "-o")
                 {
                     save();
+                }
+                else
+                {
+                    Console.WriteLine("'" + s[i] + "'" + "is an unknown command");
                 }
             }
             Console.WriteLine("程序结束,任意键结束！\n");
@@ -69,8 +84,8 @@ namespace wordCount
         public static void save()
         {
             //写入文件的方法        
-            string fileName = Environment.CurrentDirectory + "\\result.txt";//被执行的文件        
-            FileStream fs = new FileStream(fileName, FileMode.Create);//定义文件操作类型,实例化
+            string filePath = Environment.CurrentDirectory + "\\result.txt";//被执行的文件        
+            FileStream fs = new FileStream(filePath, FileMode.Create);//定义文件操作类型,实例化
             StreamWriter sw = new StreamWriter(fs);//用特定方式写入信息,实例化
             for (int i = 0; i < 3; i++)
             {

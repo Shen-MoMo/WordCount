@@ -11,15 +11,16 @@ using System.Collections;
 
 namespace wordCount
 {
-    class Function
+    //基类，基础的功能函数
+    class Function 
     {
-        public static int getChacactor(string fileName)
+        public static int getChacactor(string filePath)
         {
             //统计字符数的方法 
             int i, count;
             count = 0;
             //打开文件
-            StreamReader fs = new StreamReader(fileName);
+            StreamReader fs = new StreamReader(filePath);
             string str = null;
             while ((str = fs.ReadLine()) != null)
             {
@@ -37,10 +38,10 @@ namespace wordCount
             Console.Write("characters：" + count + "\n");
             return count;
         }
-        public static int getRows(string fileName)
+        public static int getRows(string filePath)
         {
             //统计行数的方法         
-            FileStream fs = new FileStream(fileName, FileMode.Open);//打开文件
+            FileStream fs = new FileStream(filePath, FileMode.Open);//打开文件
             StreamReader sr = new StreamReader(fs, Encoding.Default);//用特定方式读取文件中信息
             string s = sr.ReadToEnd();//读出所有信息
             fs.Close();
@@ -51,10 +52,10 @@ namespace wordCount
             Console.Write("lines：" + words.Length + "\n");
             return words.Length;//返回字符串的个数,即行数          
         }
-        public static int totalWord(string fileName)
+        public static int totalWord(string filePath)
         {
             //统计单词的总数
-            FileStream fs = new FileStream(fileName, FileMode.Open);//打开文件
+            FileStream fs = new FileStream(filePath, FileMode.Open);//打开文件
             StreamReader sr = new StreamReader(fs, Encoding.Default);
             string s = sr.ReadToEnd();//读取所有信息
             Regex rg = new Regex("[A-Za-z-]+");//用正则表达式匹配单词
@@ -65,10 +66,10 @@ namespace wordCount
             Console.Write("words:" + mc.Count + "\n");
             return mc.Count;
         }
-        public static Hashtable countWord(string fileName)
+        public static Hashtable countWord(string filePath)
         {
             //统计单个单词的出现次数
-            FileStream fs = new FileStream(fileName, FileMode.Open);//打开文件
+            FileStream fs = new FileStream(filePath, FileMode.Open);//打开文件
             StreamReader sr = new StreamReader(fs, Encoding.Default);
             string s = sr.ReadToEnd();//读取所有信息
 
@@ -108,4 +109,10 @@ namespace wordCount
             return wordList;
         }
     }
+    //派生类，优化用户体验
+    class FunctionEX
+    {
+
+    }
+
 }
