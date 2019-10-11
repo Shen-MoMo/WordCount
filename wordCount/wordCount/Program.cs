@@ -22,7 +22,7 @@ namespace wordCount
 {
     class Program
     {
-        public static ArrayList returnTxt = new ArrayList();
+        public static ArrayList returnTxt = new ArrayList();//保存写入文本的信息
         public static void Main(string[] args)
         {
             string filePath = Environment.CurrentDirectory + "\\file.txt";//记录执行文件的路径，默认为DEBUG目录        
