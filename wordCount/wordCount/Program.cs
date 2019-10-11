@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Collections;
+using System.Windows.Forms;
 
 /*
  * 代码规范:
@@ -25,6 +26,10 @@ namespace wordCount
         public static string[] Information = { "", "", "" ,""};//定义写入文件的3种信息
         public static void Main(string[] args)
         {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new Form1());
+
             string filePath = Environment.CurrentDirectory + "\\file.txt";//记录执行文件的路径，默认为DEBUG目录        
             Console.Write("wordCount.exe ");
 
@@ -35,6 +40,7 @@ namespace wordCount
             int[] returnNumber = { -1, -1, -1};//最终返回的文档数据
             for (int i = 0; i < s.Length; i++)
             {
+                //对相应的命令执行相应的操作，结果写入returnNumber
                 if (s[i] == "-r" && i == 0) //指定读取的文件 注意：使用该指令时，该指令必须在一开始申明
                 {
                     i++;
@@ -47,7 +53,6 @@ namespace wordCount
                     Console.WriteLine("found file success!");
                     filePath = s[i];
                 }
-                //对相应的命令执行相应的操作，结果写入returnNumber
                 if (s[i] == "-c")//统计总字符数
                 { 
                     returnNumber[i] = Function.getChacactor(filePath);
@@ -67,13 +72,15 @@ namespace wordCount
                 {
                     Hashtable returnTable = Function.countWord(filePath);
                 }
-                else if (s[i] == "-o")
+                else if (s[i] == "-o")//输出结果
                 {
-                    save();
+                    string outPath = s[i+1];
+                    save(s[i+1]);
                 }
-                else
+                else//输入错误，弹出程序
                 {
-                    Console.WriteLine("'" + s[i] + "'" + "is an unknown command");
+                    Console.WriteLine("error:"+"'" + s[i] + "'" + "is an unknown command");
+                    break;
                 }
             }
             Console.WriteLine("程序结束,任意键结束！\n");
@@ -81,10 +88,14 @@ namespace wordCount
             
         }
 
-        public static void save()
+        public static void save(string filePath)
         {
-            //写入文件的方法        
-            string filePath = Environment.CurrentDirectory + "\\result.txt";//被执行的文件        
+            //写入文件的方法     
+            if(filePath == null)
+                filePath = Environment.CurrentDirectory + "\\result.txt";   //被执行的文件，默认路径
+            else
+                filePath = filePath + "\\result.txt";                       //被执行的文件，指定路径
+
             FileStream fs = new FileStream(filePath, FileMode.Create);//定义文件操作类型,实例化
             StreamWriter sw = new StreamWriter(fs);//用特定方式写入信息,实例化
             for (int i = 0; i < 3; i++)
