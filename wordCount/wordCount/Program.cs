@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Collections;
-using System.Windows.Forms;
 
 /*
  * 代码规范:
@@ -26,12 +25,6 @@ namespace wordCount
         public static string[] Information = { "", "", "", "", "", "" };//定义写入文件的3种信息
         public static void Main(string[] args)
         {
-            
-            /*Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
-            */
-
             string filePath = Environment.CurrentDirectory + "\\file.txt";//记录执行文件的路径，默认为DEBUG目录        
             Console.Write("wordCount.exe ");
 
@@ -43,52 +36,62 @@ namespace wordCount
             for (int i = 0; i < s.Length; i++)
             {
                 //对相应的命令执行相应的操作，结果写入returnNumber
-                if (s[i] == "-r" && i == 0) //指定读取的文件 注意：使用该指令时，该指令必须在一开始申明
+                try
                 {
-                    i++;
-                    if(i == s.Length)
+                    if (s[i] == "-r" && i == 0) //指定读取的文件 注意：使用该指令时，该指令必须在一开始申明
                     {
-                        Console.WriteLine("file path is invalid !");
-                        break;
+                        i++;
+                        try//
+                        {
+                            FileInfo fi = new FileInfo(s[i]);
+                            if (File.Exists(s[i]) == false || fi.Length == 0)//找不到文件或者文件为空
+                            {
+                                Console.WriteLine("can't find file or file is empty!");
+                                break;
+                            }
+                            Console.WriteLine("found file success!");
+                            filePath = s[i];
+                        }
+                        catch (IndexOutOfRangeException e)
+                        {
+                            Console.WriteLine("file path is invalid !"+ "Exception caught:{0}", e);
+                        }
+
                     }
-                    FileInfo fi = new FileInfo(s[i]);
-                    if (File.Exists(s[i]) == false || fi.Length == 0)//找不到文件或者文件为空
+                    else if (s[i] == "-c")//统计总字符数
                     {
-                        Console.WriteLine("can't find file or file is empty!");
-                        break;
+                        returnNumber[i] = Function.getChacactor(filePath);
+                        Information[i] = "characters：：" + returnNumber[i] + "\n";
                     }
-                    Console.WriteLine("found file success!");
-                    filePath = s[i];
-                }
-                if (s[i] == "-c")//统计总字符数
-                { 
-                    returnNumber[i] = Function.getChacactor(filePath);
-                    Information[i] = "characters：：" + returnNumber[i] + "\n";
-                }
-                else if (s[i] == "-l")//统计总行数
-                {
-                    returnNumber[i] = Function.getRows(filePath);
-                    Information[i] = "lines：" + returnNumber[i] + "\n";
-                }
-                else if (s[i] == "-n")//统计单词数
-                {
-                    returnNumber[i] = Function.totalWord(filePath);
-                    Information[i] = "words:" + returnNumber[i] + "\n";
-                }
-                else if(s[i] == "-w")//统计出现频率最高的10个单词及出现次数
-                {
-                    Hashtable returnTable = Function.countWord(filePath);
-                }
-                else if (s[i] == "-o")//输出结果
-                {
-                    i++;
-                    if (i == s.Length)
+                    else if (s[i] == "-l")//统计总行数
                     {
-                        save(null);//保存默认地址
-                        break;
+                        returnNumber[i] = Function.getRows(filePath);
+                        Information[i] = "lines：" + returnNumber[i] + "\n";
                     }
-                    string outPath = s[i];
-                    save(s[i]);
+                    else if (s[i] == "-n")//统计单词数
+                    {
+                        returnNumber[i] = Function.totalWord(filePath);
+                        Information[i] = "words:" + returnNumber[i] + "\n";
+                    }
+                    else if (s[i] == "-w")//统计出现频率最高的10个单词及出现次数
+                    {
+                        Hashtable returnTable = Function.countWord(filePath);
+                    }
+                    else if (s[i] == "-o")//输出结果
+                    {
+                        i++;
+                        if (i == s.Length)
+                        {
+                            save(null);//保存默认地址
+                            break;
+                        }
+                        string outPath = s[i];
+                        save(s[i]);
+                    }
+                }
+                catch(IndexOutOfRangeException e)
+                {
+                    Console.WriteLine("Exception caught:{0}", e);
                 }
                /* else//输入错误，弹出程序
                 {

@@ -104,7 +104,7 @@ namespace wordCount
             Array.Reverse(keys);
             try
             {
-                for (int j = 0; j < 10 && j < wordList.Count; j++)
+                for (int j = 0; j < 10 && j<wordList.Count; j++)
                 {
                     Console.WriteLine(keys[j] + ":" + wordList[keys[j]]);
                 }
