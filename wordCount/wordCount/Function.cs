@@ -12,7 +12,7 @@ using System.Collections;
 namespace wordCount
 {
     //基类，基础的功能函数
-    class Function 
+    public class Function 
     {
         public static int getChacactor(string filePath)
         {
@@ -102,9 +102,16 @@ namespace wordCount
             wordList.Values.CopyTo(values, 0);
             Array.Sort(values, keys);
             Array.Reverse(keys);
-            for (int j = 0; j < 10; j++)
+            try
             {
-                Console.WriteLine(keys[j] + ":" + wordList[keys[j]]);
+                for (int j = 0; j < 10 && j < wordList.Count; j++)
+                {
+                    Console.WriteLine(keys[j] + ":" + wordList[keys[j]]);
+                }
+            }
+            catch(IndexOutOfRangeException e)
+            {
+                Console.WriteLine("Exception caught:{0}", e);
             }
             return wordList;
         }
