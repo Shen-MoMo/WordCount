@@ -22,7 +22,7 @@ namespace wordCount
 {
     class Program
     {
-        public static string[] Information = { "", "", "", "", "", "" };//定义写入文件的3种信息
+        public static ArrayList returnTxt = new ArrayList();
         public static void Main(string[] args)
         {
             string filePath = Environment.CurrentDirectory + "\\file.txt";//记录执行文件的路径，默认为DEBUG目录        
@@ -32,7 +32,6 @@ namespace wordCount
             char[] c = { ' ' };//操作符之间由空格分开
             string[] s = message.Split(c, StringSplitOptions.RemoveEmptyEntries);//将分开的命令写入数组
 
-            int[] returnNumber = { -1, -1, -1, -1, -1, -1, -1 };//最终返回的文档数据
             for (int i = 0; i < s.Length; i++)
             {
                 //对相应的命令执行相应的操作，结果写入returnNumber
@@ -41,7 +40,7 @@ namespace wordCount
                     if (s[i] == "-r" && i == 0) //指定读取的文件 注意：使用该指令时，该指令必须在一开始申明
                     {
                         i++;
-                        try//
+                        try
                         {
                             FileInfo fi = new FileInfo(s[i]);
                             if (File.Exists(s[i]) == false || fi.Length == 0)//找不到文件或者文件为空
@@ -52,30 +51,28 @@ namespace wordCount
                             Console.WriteLine("found file success!");
                             filePath = s[i];
                         }
-                        catch (IndexOutOfRangeException e)
+                        catch (IndexOutOfRangeException e)//用户使用了-r指令，却未输入地址和操作指令
                         {
-                            Console.WriteLine("file path is invalid !"+ "Exception caught:{0}", e);
+                            Console.WriteLine("file path is invalid !");
+                            Console.WriteLine("Exception caught:{0}", e);
                         }
 
                     }
                     else if (s[i] == "-c")//统计总字符数
                     {
-                        returnNumber[i] = Function.getChacactor(filePath);
-                        Information[i] = "characters：：" + returnNumber[i] + "\n";
+                        returnTxt.Add(Function.getChacactor(filePath));
                     }
                     else if (s[i] == "-l")//统计总行数
                     {
-                        returnNumber[i] = Function.getRows(filePath);
-                        Information[i] = "lines：" + returnNumber[i] + "\n";
+                        returnTxt.Add(Function.getRows(filePath));
                     }
                     else if (s[i] == "-n")//统计单词数
                     {
-                        returnNumber[i] = Function.totalWord(filePath);
-                        Information[i] = "words:" + returnNumber[i] + "\n";
+                        returnTxt.Add(Function.totalWord(filePath));
                     }
                     else if (s[i] == "-w")//统计出现频率最高的10个单词及出现次数
                     {
-                        Hashtable returnTable = Function.countWord(filePath);
+                        returnTxt.AddRange(Function.countWord(filePath));
                     }
                     else if (s[i] == "-o")//输出结果
                     {
@@ -88,16 +85,19 @@ namespace wordCount
                         string outPath = s[i];
                         save(s[i]);
                     }
+                        else//输入错误，弹出程序
+                    {
+                        Console.WriteLine("error:"+"'" + s[i] + "'" + "is an unknown command");
+                        break;
+                    }
                 }
-                catch(IndexOutOfRangeException e)
+                catch (IndexOutOfRangeException e)//用户重复调用了太多次指令，导致超出了数组的界限
                 {
+                    Console.WriteLine("too much conmand !");
                     Console.WriteLine("Exception caught:{0}", e);
-                }
-               /* else//输入错误，弹出程序
-                {
-                    Console.WriteLine("error:"+"'" + s[i] + "'" + "is an unknown command");
                     break;
-                }*/
+                }
+               
             }
             Console.WriteLine("程序结束,任意键结束！\n");
             Console.ReadLine();
@@ -114,9 +114,9 @@ namespace wordCount
 
             FileStream fs = new FileStream(filePath, FileMode.Create);//定义文件操作类型,实例化
             StreamWriter sw = new StreamWriter(fs);//用特定方式写入信息,实例化
-            for (int i = 0; i < 3; i++)
+            foreach(string info in returnTxt)
             {
-                sw.Write(Information[i]);//写入第i种信息
+                sw.Write(info);
                 sw.Write("\r\n");//换行
             }
             sw.Flush();

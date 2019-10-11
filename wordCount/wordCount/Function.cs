@@ -14,7 +14,7 @@ namespace wordCount
     //基类，基础的功能函数
     public class Function 
     {
-        public static int getChacactor(string filePath)
+        public static string getChacactor(string filePath)
         {
             //统计字符数的方法 
             int i, count;
@@ -36,9 +36,9 @@ namespace wordCount
             fs.Close();
             Console.Write("字符统计成功!\n");
             Console.Write("characters：" + count + "\n");
-            return count;
+            return "characters：" + count + "\n";
         }
-        public static int getRows(string filePath)
+        public static string getRows(string filePath)
         {
             //统计行数的方法         
             FileStream fs = new FileStream(filePath, FileMode.Open);//打开文件
@@ -50,9 +50,9 @@ namespace wordCount
             string[] words = s.Split(c, StringSplitOptions.RemoveEmptyEntries);//将读出的信息按跳过的字符类型，分割成字符串
             Console.Write("行数统计成功\n");
             Console.Write("lines：" + words.Length + "\n");
-            return words.Length;//返回字符串的个数,即行数          
+            return "lines：" + words.Length + "\n";//返回字符串的个数,即行数          
         }
-        public static int totalWord(string filePath)
+        public static string totalWord(string filePath)
         {
             //统计单词的总数
             FileStream fs = new FileStream(filePath, FileMode.Open);//打开文件
@@ -64,9 +64,9 @@ namespace wordCount
             fs.Close();
             sr.Close();
             Console.Write("words:" + mc.Count + "\n");
-            return mc.Count;
+            return "words:" + mc.Count + "\n";
         }
-        public static Hashtable countWord(string filePath)
+        public static ArrayList countWord(string filePath)
         {
             //统计单个单词的出现次数
             FileStream fs = new FileStream(filePath, FileMode.Open);//打开文件
@@ -98,6 +98,7 @@ namespace wordCount
             sr.Close();
             string[] keys = new string[wordList.Count];
             int[] values = new int[wordList.Count];
+            ArrayList retureList = new ArrayList();
             wordList.Keys.CopyTo(keys, 0);
             wordList.Values.CopyTo(values, 0);
             Array.Sort(values, keys);
@@ -107,13 +108,14 @@ namespace wordCount
                 for (int j = 0; j < 10 && j<wordList.Count; j++)
                 {
                     Console.WriteLine(keys[j] + ":" + wordList[keys[j]]);
+                    retureList.Add(keys[j] + ":" + wordList[keys[j]]);
                 }
             }
             catch(IndexOutOfRangeException e)
             {
                 Console.WriteLine("Exception caught:{0}", e);
             }
-            return wordList;
+            return retureList;
         }
     }
     //派生类，优化用户体验
