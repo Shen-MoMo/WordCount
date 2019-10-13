@@ -35,69 +35,60 @@ namespace wordCount
             for (int i = 0; i < s.Length; i++)
             {
                 //对相应的命令执行相应的操作，结果写入returnNumber
-                try
+                if (s[i] == "-r" && i == 0) //指定读取的文件 注意：使用该指令时，该指令必须在一开始申明
                 {
-                    if (s[i] == "-r" && i == 0) //指定读取的文件 注意：使用该指令时，该指令必须在一开始申明
+                    i++;
+                    try
                     {
-                        i++;
-                        try
+                        FileInfo fi = new FileInfo(s[i]);
+                        if (File.Exists(s[i]) == false || fi.Length == 0)//找不到文件或者文件为空
                         {
-                            FileInfo fi = new FileInfo(s[i]);
-                            if (File.Exists(s[i]) == false || fi.Length == 0)//找不到文件或者文件为空
-                            {
-                                Console.WriteLine("can't find file or file is empty!");
-                                break;
-                            }
-                            Console.WriteLine("found file success!");
-                            filePath = s[i];
-                        }
-                        catch (IndexOutOfRangeException e)//用户使用了-r指令，却未输入地址和操作指令
-                        {
-                            Console.WriteLine("file path is invalid !");
-                            Console.WriteLine("Exception caught:{0}", e);
-                        }
-
-                    }
-                    else if (s[i] == "-c")//统计总字符数
-                    {
-                        returnTxt.Add(Function.getChacactor(filePath));
-                    }
-                    else if (s[i] == "-l")//统计总行数
-                    {
-                        returnTxt.Add(Function.getRows(filePath));
-                    }
-                    else if (s[i] == "-n")//统计单词数
-                    {
-                        returnTxt.Add(Function.totalWord(filePath));
-                    }
-                    else if (s[i] == "-w")//统计出现频率最高的10个单词及出现次数
-                    {
-                        returnTxt.AddRange(Function.countWord(filePath));
-                    }
-                    else if (s[i] == "-o")//输出结果
-                    {
-                        i++;
-                        if (i == s.Length)
-                        {
-                            save(null);//保存默认地址
+                            Console.WriteLine("can't find file or file is empty!");
                             break;
                         }
-                        string outPath = s[i];
-                        save(s[i]);
+                        Console.WriteLine("found file success!");
+                        filePath = s[i];
                     }
-                        else//输入错误，弹出程序
+                    catch (IndexOutOfRangeException e)//用户使用了-r指令，却未输入地址和操作指令
                     {
-                        Console.WriteLine("error:"+"'" + s[i] + "'" + "is an unknown command");
+                        Console.WriteLine("file path is invalid !");
+                        Console.WriteLine("Exception caught:{0}", e);
+                    }
+
+                }
+                else if (s[i] == "-c")//统计总字符数
+                {
+                    returnTxt.Add(Function.getChacactor(filePath));
+                }
+                else if (s[i] == "-l")//统计总行数
+                {
+                    returnTxt.Add(Function.getRows(filePath));
+                }
+                else if (s[i] == "-n")//统计单词数
+                {
+                    returnTxt.Add(Function.totalWord(filePath));
+                }
+                else if (s[i] == "-w")//统计出现频率最高的10个单词及出现次数
+                {
+                    returnTxt.AddRange(Function.countWord(filePath));
+                }
+                else if (s[i] == "-o")//输出结果
+                {
+                    i++;
+                    if (i == s.Length)
+                    {
+                        save(null);//保存默认地址
                         break;
                     }
+                    string outPath = s[i];
+                    save(s[i]);
                 }
-                catch (IndexOutOfRangeException e)//用户重复调用了太多次指令，导致超出了数组的界限
+                else//输入错误，弹出程序
                 {
-                    Console.WriteLine("too much conmand !");
-                    Console.WriteLine("Exception caught:{0}", e);
+                    Console.WriteLine("error:"+"'" + s[i] + "'" + "is an unknown command");
                     break;
-                }
-               
+                } 
+
             }
             Console.WriteLine("程序结束,任意键结束！\n");
             Console.ReadLine();
@@ -106,11 +97,19 @@ namespace wordCount
 
         public static void save(string filePath)
         {
-            //写入文件的方法     
-            if(filePath == null)
+            //写入文件的方法
+            if (filePath == null)
                 filePath = Environment.CurrentDirectory + "\\result.txt";   //被执行的文件，默认路径
-            else
+            else if (Directory.Exists(filePath))
                 filePath = filePath + "\\result.txt";                       //被执行的文件，指定路径
+            else if (File.Exists(filePath))
+                filePath = filePath;
+            else
+            {
+                Console.WriteLine("warning:'" + filePath + "' is an invalid output path");
+                filePath = Environment.CurrentDirectory + "\\result.txt";
+                Console.WriteLine("save file to default path: " + filePath); 
+            }
 
             FileStream fs = new FileStream(filePath, FileMode.Create);//定义文件操作类型,实例化
             StreamWriter sw = new StreamWriter(fs);//用特定方式写入信息,实例化
